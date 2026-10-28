@@ -24,3 +24,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "BookSearch"
 include(":app")
+include(":core:data")
+include(":core:database")
+include(":core:designsystem")
+include(":core:domain")
+include(":core:network")
+include(":feature:detail")
+include(":feature:favorite")
+include(":feature:search")
