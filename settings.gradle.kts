@@ -1,4 +1,6 @@
 pluginManagement {
+    // build-logic의 컨벤션 플러그인(booksearch.*)을 모듈에서 쓸 수 있게 포함
+    includeBuild("build-logic")
     repositories {
         google {
             content {
