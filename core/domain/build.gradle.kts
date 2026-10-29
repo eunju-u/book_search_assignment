@@ -1,7 +1,8 @@
 plugins {
-    alias(libs.plugins.booksearch.android.library)
+    alias(libs.plugins.booksearch.jvm.library)
 }
 
-android {
-    namespace = "com.example.domain"
+dependencies {
+    api(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
 }

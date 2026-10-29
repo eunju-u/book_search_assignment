@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.designsystem.theme.BackgroundGray
 
 // 팝업
 @Composable
@@ -57,7 +58,7 @@ fun <T> PopupWidget(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onItemSelected(item) }
-                            .background(color = if (isSelected) Color(0xFFF5F5F5) else Color.Transparent)
+                            .background(color = if (isSelected) BackgroundGray else Color.Transparent)
                             .border(
                                 width = if (isSelected) 1.5.dp else 0.dp,
                                 color = if (isSelected) Color.DarkGray else Color.Transparent,

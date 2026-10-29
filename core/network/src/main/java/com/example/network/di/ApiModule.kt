@@ -8,6 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
+// API 인터페이스
 @InstallIn(SingletonComponent::class)
 @Module
 object ApiModule {

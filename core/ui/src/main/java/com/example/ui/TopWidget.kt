@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.example.designsystem.component.LeftImageButton
 import com.example.designsystem.component.SearchWidget
 import com.example.designsystem.R as DesignR
-import com.example.ui.R
 
 // 화면 상단 : 검색창, 정렬/필터 버튼
 @Composable

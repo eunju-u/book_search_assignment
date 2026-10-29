@@ -1,5 +1,6 @@
 package com.example.network.dto
 
+// 검색 결과 정보
 data class Meta(
     val total_count: Int, // 검색된 문서 수
     val pageable_count: Int, //중복 문서 제외, 노출 가능 문서 수

@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.example.search"
 }
+
+dependencies {
+    implementation(libs.androidx.paging.compose)
+}

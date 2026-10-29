@@ -1,8 +1,10 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.example.booksearch.buildlogic.configureAndroidCompose
+import com.example.booksearch.buildlogic.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
 // Compose를 쓰는 모듈용
@@ -16,6 +18,10 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
             }
             pluginManager.withPlugin("com.android.library") {
                 configureAndroidCompose(extensions.getByType<LibraryExtension>())
+            }
+
+            dependencies {
+                "implementation"(libs.findLibrary("androidx.navigation.compose").get())
             }
         }
     }

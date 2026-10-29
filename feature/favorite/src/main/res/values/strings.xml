@@ -1,12 +1,11 @@
 <resources>
-    <string name="app_name">favorite</string>
     <string name="favorite">즐겨찾기</string>
 
-    <!-- 정렬  -->
+    <!-- 정렬 -->
     <string name="favorite_sort_ascending">오름차순(제목)</string>
     <string name="favorite_sort_descending">내림차순(제목)</string>
 
-    <!-- 가격 필터  -->
+    <!-- 가격 필터 -->
     <string name="favorite_filter_reset">초기화</string>
     <string name="favorite_filter_under_10000">1만원미만</string>
     <string name="favorite_filter_10000">1만원대</string>

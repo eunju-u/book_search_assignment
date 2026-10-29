@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.R
+import com.example.designsystem.theme.BackgroundGray
 
 // 검색창
 @Composable
@@ -54,17 +55,16 @@ fun SearchWidget(
     // 글자 유지
     var textFieldState by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(text)) }
 
-    val pureGrayColor = Color(0xFFF5F5F5)
     val grayColor = Color.Gray
     val darkColor = Color.DarkGray
-    var iconColor by remember { mutableStateOf(pureGrayColor) }
+    var iconColor by remember { mutableStateOf(BackgroundGray) }
     var isShowClose by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
             .wrapContentHeight()
             .padding(PaddingValues(horizontal = 15.dp))
-            .background(color = pureGrayColor, shape = RoundedCornerShape(15.dp))
+            .background(color = BackgroundGray, shape = RoundedCornerShape(15.dp))
             .clip(shape = RoundedCornerShape(10.dp))
             .padding(PaddingValues(horizontal = 10.dp, vertical = 12.dp))
             .onFocusChanged {
@@ -75,7 +75,7 @@ fun SearchWidget(
                     keyboardController?.hide()
                 }
             },
-        color = pureGrayColor
+        color = BackgroundGray
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

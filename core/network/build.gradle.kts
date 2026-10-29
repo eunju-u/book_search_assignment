@@ -14,8 +14,8 @@ android {
     namespace = "com.example.network"
 
     defaultConfig {
-        buildConfigField("String", "KAKAO_API_URL", "\"${localProperties.getProperty("KAKAO_API_URL", "")}\"")
-        buildConfigField("String", "KAKAO_API_KEY", "\"${localProperties.getProperty("KAKAO_API_KEY", "")}\"")
+        buildConfigField("String", "KAKAO_API_URL", localProperties["KAKAO_API_URL"].toString())
+        buildConfigField("String", "KAKAO_API_KEY", localProperties["KAKAO_API_KEY"].toString())
     }
     buildFeatures {
         buildConfig = true

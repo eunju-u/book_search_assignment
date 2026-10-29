@@ -13,12 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,7 +32,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.designsystem.component.RowTextWidget
 import com.example.designsystem.R as DesignR
-import com.example.ui.R
 
 // 도서 아이템
 @Composable
@@ -102,22 +97,11 @@ fun BookItemWidget(
             }
         }
 
-        IconButton(
+        FavoriteIconButton(
+            isFavorite = book.isFavorite,
             onClick = onHeartClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(24.dp)
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(20.dp),
-                painter = painterResource(
-                    id = if (book.isFavorite) DesignR.drawable.icon_heart_full else DesignR.drawable.icon_heart
-                ),
-                contentDescription = stringResource(R.string.book_favorite),
-                tint = if (book.isFavorite) Color.Red else Color.Gray
-            )
-        }
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
 
         // 오른쪽 하단 가격
         Text(

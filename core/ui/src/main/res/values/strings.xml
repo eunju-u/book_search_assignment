@@ -1,16 +1,26 @@
 <resources>
-    <string name="app_name">ui</string>
-
     <string name="book_label">도서</string>
     <string name="book_image">책 이미지</string>
     <string name="book_author">저자</string>
     <string name="book_publisher">출판사</string>
     <string name="book_date">출간일</string>
     <string name="book_favorite">즐겨찾기</string>
+    <string name="book_isbn">ISBN</string>
+    <string name="book_price">정상가</string>
+    <string name="book_sale_price">할인가</string>
+    <string name="book_info">책소개</string>
 
     <string name="book_price_won">%1$s원</string>
     <string name="filter">필터</string>
     <string name="sort">정렬</string>
     <string name="hint">제목 또는 저자를 입력해주세요.</string>
+
+    <!-- 검색 목록 상태 안내 -->
+    <string name="reset_load">다시 조회하기</string>
+    <string name="last_page">마지막 페이지입니다</string>
+    <string name="none_result">검색 결과가 없습니다.</string>
+    <string name="connect_network">네트워크를 연결해주세요</string>
+    <string name="server_error">일시적인 서버 오류입니다.\n잠시 후 다시 시도해주세요</string>
+    <string name="unknown_error">오류가 발생했습니다</string>
 
 </resources>

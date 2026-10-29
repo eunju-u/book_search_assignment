@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.booksearch.android.application)
     alias(libs.plugins.booksearch.android.compose)
     alias(libs.plugins.booksearch.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -31,7 +32,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // 모듈
+    implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:search"))
     implementation(project(":feature:favorite"))
+    implementation(project(":feature:detail"))
+    implementation(project(":core:data"))
 }

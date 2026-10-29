@@ -18,7 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.PopupWidget
+import com.example.designsystem.theme.BackgroundGray
 import com.example.domain.model.BookModel
 import com.example.ui.BookItemWidget
 import com.example.ui.FilterButton
@@ -28,28 +31,51 @@ import com.example.ui.TopWidget
 // 팝업 enum (정렬, 필터)
 private enum class FavoritePopup { SORT, FILTER }
 
+@Composable
+fun FavoriteScreen(
+    onBookClick: (BookModel) -> Unit,
+    viewModel: FavoriteViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    FavoriteScreen(
+        uiState = uiState,
+        onSearch = viewModel::search,
+        onSortSelected = viewModel::selectSort,
+        onFilterSelected = viewModel::selectFilter,
+        onFavoriteClick = viewModel::toggleFavorite,
+        onBookClick = onBookClick,
+    )
+}
+
 // 즐겨찾기 화면
 @Composable
-fun FavoriteScreen() {
+internal fun FavoriteScreen(
+    uiState: FavoriteUiState,
+    onSearch: (String) -> Unit,
+    onSortSelected: (FavoriteSortType) -> Unit,
+    onFilterSelected: (FavoriteFilterType) -> Unit,
+    onFavoriteClick: (BookModel) -> Unit,
+    onBookClick: (BookModel) -> Unit,
+) {
     val resources = LocalResources.current
-    var sort by rememberSaveable { mutableStateOf(FavoriteSortType.ASCENDING) }
-    var filter by rememberSaveable { mutableStateOf(FavoriteFilterType.RESET) }
     var popup by rememberSaveable { mutableStateOf<FavoritePopup?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)),
+            .background(BackgroundGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopWidget(
             title = stringResource(R.string.favorite),
-            text = "",
-            selectedSort = stringResource(sort.textRes),
+            onSearch = onSearch,
+            text = uiState.query,
+            selectedSort = stringResource(uiState.sort.textRes),
             actions = {
                 FilterButton(
                     onClick = { popup = FavoritePopup.FILTER },
-                    pointer = filter != FavoriteFilterType.RESET
+                    pointer = uiState.filter != FavoriteFilterType.RESET
                 )
                 SortButton(onClick = { popup = FavoritePopup.SORT })
             }
@@ -60,8 +86,12 @@ fun FavoriteScreen() {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(sampleBooks) { book ->
-                BookItemWidget(book = book)
+            items(items = uiState.books) { book ->
+                BookItemWidget(
+                    book = book,
+                    onHeartClick = { onFavoriteClick(book) },
+                    onClick = { onBookClick(book) },
+                )
             }
         }
     }
@@ -69,10 +99,10 @@ fun FavoriteScreen() {
     when (popup) {
         FavoritePopup.SORT -> PopupWidget(
             items = FavoriteSortType.entries,
-            selectedItem = sort,
+            selectedItem = uiState.sort,
             getText = { resources.getString(it.textRes) },
             onItemSelected = {
-                sort = it
+                onSortSelected(it)
                 popup = null
             },
             onDismiss = { popup = null }
@@ -80,10 +110,10 @@ fun FavoriteScreen() {
 
         FavoritePopup.FILTER -> PopupWidget(
             items = FavoriteFilterType.entries,
-            selectedItem = filter,
+            selectedItem = uiState.filter,
             getText = { resources.getString(it.textRes) },
             onItemSelected = {
-                filter = it
+                onFilterSelected(it)
                 popup = null
             },
             onDismiss = { popup = null }
@@ -92,25 +122,3 @@ fun FavoriteScreen() {
         null -> {}
     }
 }
-
-private val sampleBooks = listOf(
-    sampleBook("코틀린 코루틴 이해하기", listOf("김철수", "이영희"), "길벗", "2023-11-02", 32000),
-    sampleBook("모바일 UI 디자인 가이드", listOf("정하늘"), "제이펍", "2024-09-30", 24000),
-    sampleBook("알고리즘 문제 해결 전략", listOf("윤서준"), "인사이트", "2021-05-12", 9800),
-)
-
-private fun sampleBook(
-    title: String,
-    authors: List<String>,
-    publisher: String,
-    date: String,
-    price: Int,
-) = BookModel(
-    title = title,
-    authors = authors,
-    publisher = publisher,
-    datetime = date,
-    price = price,
-    thumbnail = "",
-    isFavorite = true,
-)

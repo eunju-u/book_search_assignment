@@ -9,6 +9,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("booksearch.android.compose")
+                apply("booksearch.android.hilt")
             }
 
             dependencies {
@@ -18,6 +19,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
                 "implementation"(libs.findLibrary("androidx.navigation.compose").get())
                 "implementation"(libs.findLibrary("androidx.lifecycle.runtime.compose").get())
+                "implementation"(libs.findLibrary("androidx.hilt.navigation.compose").get())
 
                 "testImplementation"(libs.findLibrary("junit").get())
                 "testImplementation"(libs.findLibrary("kotlinx.coroutines.test").get())

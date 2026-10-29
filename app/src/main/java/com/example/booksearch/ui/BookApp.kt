@@ -1,5 +1,7 @@
 package com.example.booksearch.ui
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,29 +28,65 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.booksearch.navigation.MainRoute
 import com.example.booksearch.navigation.BottomTab
+import com.example.detail.navigation.detailScreen
+import com.example.detail.navigation.navigateToDetail
+import com.example.domain.model.BookModel
 import com.example.favorite.FavoriteScreen
 import com.example.search.SearchScreen
 
 // 앱 메인 화면
 @Composable
-fun BookApp() {
-    var selectedTab by rememberSaveable { mutableStateOf(BottomTab.SEARCH) }
-
+fun BookApp(
+    navController: NavHostController = rememberNavController(),
+) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Scaffold(
-            modifier = Modifier.padding(innerPadding),
-            bottomBar = { BookBottomBar(onTabClick = { selectedTab = it }) },
-        ) { tabPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-                    .padding(tabPadding)
-            ) {
+        NavHost(
+            navController = navController,
+            startDestination = MainRoute,
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(innerPadding),
+        ) {
+            composable<MainRoute> {
+                MainScreen(onBookClick = { book -> navController.navigateToDetail(book) })
+            }
+            detailScreen(
+                navController = navController,
+                onBack = { navController.popBackStack() },
+            )
+        }
+    }
+}
+
+// 메인 화면 - 하단 탭 + 선택된 탭의 화면 (검색, 즐겨찾기)
+@Composable
+private fun MainScreen(onBookClick: (BookModel) -> Unit) {
+    var selectedTab by rememberSaveable { mutableStateOf(BottomTab.SEARCH) }
+    // 탭마다 화면 상태(스크롤 위치 등)를 따로 저장하고 탭 시 복원
+    val tabStateHolder = rememberSaveableStateHolder()
+
+    Scaffold(
+        bottomBar = { BookBottomBar(onTabClick = { selectedTab = it }) },
+    ) { tabPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(tabPadding)
+        ) {
+            tabStateHolder.SaveableStateProvider(key = selectedTab.name) {
                 when (selectedTab) {
-                    BottomTab.SEARCH -> SearchScreen()
-                    BottomTab.FAVORITE -> FavoriteScreen()
+                    BottomTab.SEARCH -> SearchScreen(onBookClick = onBookClick)
+                    BottomTab.FAVORITE -> FavoriteScreen(onBookClick = onBookClick)
                 }
             }
         }

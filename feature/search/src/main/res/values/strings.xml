@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">search</string>
     <string name="search">검색</string>
 
     <!-- 정렬 -->

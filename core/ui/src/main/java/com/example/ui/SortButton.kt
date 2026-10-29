@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.designsystem.component.LeftImageButton
 import com.example.designsystem.R as DesignR
-import com.example.ui.R
 
 // 정렬 버튼
 @Composable

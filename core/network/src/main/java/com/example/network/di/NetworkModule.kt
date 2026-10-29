@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+// OkHttp, Retrofit 제공
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
