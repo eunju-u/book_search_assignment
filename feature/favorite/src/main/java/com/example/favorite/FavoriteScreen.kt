@@ -1,5 +1,6 @@
 package com.example.favorite
 
+import com.example.ui.R as UiR
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import com.example.designsystem.component.ErrorHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,14 +42,21 @@ fun FavoriteScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    FavoriteScreen(
-        uiState = uiState,
-        onSearch = viewModel::search,
-        onSortSelected = viewModel::selectSort,
-        onFilterSelected = viewModel::selectFilter,
-        onFavoriteClick = viewModel::toggleFavorite,
-        onBookClick = onBookClick,
-    )
+    val favoriteError by viewModel.favoriteError.collectAsStateWithLifecycle()
+    ErrorHost(
+        hasError = favoriteError,
+        message = stringResource(UiR.string.favorite_update_failed),
+        onErrorShown = viewModel::dismissFavoriteError,
+    ) {
+        FavoriteScreen(
+            uiState = uiState,
+            onSearch = viewModel::search,
+            onSortSelected = viewModel::selectSort,
+            onFilterSelected = viewModel::selectFilter,
+            onFavoriteClick = viewModel::toggleFavorite,
+            onBookClick = onBookClick,
+        )
+    }
 }
 
 // 즐겨찾기 화면

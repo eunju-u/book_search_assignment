@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import com.example.designsystem.component.ErrorHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,12 +60,19 @@ fun DetailScreen(
 
     val favoriteIds by viewModel.favoriteIds.collectAsStateWithLifecycle()
 
-    DetailScreen(
-        book = book,
-        isFavorite = favoriteIds?.contains(book.id) ?: book.isFavorite,
-        onBack = onBack,
-        onFavoriteClick = { viewModel.toggleFavorite(book) },
-    )
+    val favoriteError by viewModel.favoriteError.collectAsStateWithLifecycle()
+    ErrorHost(
+        hasError = favoriteError,
+        message = stringResource(UiR.string.favorite_update_failed),
+        onErrorShown = viewModel::dismissFavoriteError,
+    ) {
+        DetailScreen(
+            book = book,
+            isFavorite = favoriteIds?.contains(book.id) ?: book.isFavorite,
+            onBack = onBack,
+            onFavoriteClick = { viewModel.toggleFavorite(book) },
+        )
+    }
 }
 
 @Composable

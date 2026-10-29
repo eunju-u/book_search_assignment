@@ -3,12 +3,23 @@ package com.example.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 // 즐겨찾기 테이블 조회/추가/삭제
 @Dao
 interface FavoriteDao {
+    // 조회와 변경을 한 트랜잭션으로 실행해 연속 클릭도 순서대로 처리
+    @Transaction
+    suspend fun toggleFavorite(book: FavoriteEntity) {
+        if (getById(book.id) == null) {
+            insert(book)
+        } else {
+            deleteById(book.id)
+        }
+    }
+
     // 전체
     @Query("SELECT * FROM favorite_book")
     fun getAllFavoriteFlow(): Flow<List<FavoriteEntity>>

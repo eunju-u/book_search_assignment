@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +36,15 @@ class SearchViewModel @Inject constructor(
     getFavoriteIdsUseCase: GetFavoriteIdsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : ViewModel() {
+
+    // 즐겨찾기 토글 실패 여부
+    private val _favoriteError = MutableStateFlow(false)
+    val favoriteError = _favoriteError.asStateFlow()
+
+    // 즐겨찾기 토글 에러 상태 초기화
+    fun dismissFavoriteError() {
+        _favoriteError.value = false
+    }
 
     private companion object {
         const val PAGE_SIZE = 20 // 페이지당 20개
@@ -90,7 +100,13 @@ class SearchViewModel @Inject constructor(
     // 즐겨찾기 토글 (추가/삭제)
     fun toggleFavorite(book: BookModel) {
         viewModelScope.launch {
-            toggleFavoriteUseCase(book)
+            try {
+                toggleFavoriteUseCase(book)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _favoriteError.value = true
+            }
         }
     }
 

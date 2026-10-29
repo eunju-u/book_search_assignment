@@ -9,6 +9,8 @@ import javax.inject.Inject
 class FavoriteDataSource @Inject constructor(
     private val favoriteDao: FavoriteDao
 ) {
+    suspend fun toggleFavorite(book: FavoriteEntity) = favoriteDao.toggleFavorite(book)
+
     // 즐겨찾기 추가
     suspend fun addFavorite(entity: FavoriteEntity) = favoriteDao.insert(entity)
 

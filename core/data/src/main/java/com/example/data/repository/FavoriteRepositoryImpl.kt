@@ -9,7 +9,7 @@ import com.example.domain.repository.FavoriteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import javax.inject.Inject
 
 // 즐겨찾기 FavoriteRepository 구현체
@@ -21,13 +21,9 @@ class FavoriteRepositoryImpl @Inject constructor(
     // 즐겨찾기 토글 기능
     // room에 도서 id 데이터 있을 경우 제거, 없을 경우 추가
     override suspend fun toggleFavorite(book: BookModel) {
-        applicationScope.launch {
-            if (localDataSource.getFavorite(book.id) != null) {
-                localDataSource.removeFavorite(book.id)
-            } else {
-                localDataSource.addFavorite(book.toEntity())
-            }
-        }.join()
+        applicationScope.async {
+            localDataSource.toggleFavorite(book.toEntity())
+        }.await()
     }
 
     // 즐겨찾기 전체 목록

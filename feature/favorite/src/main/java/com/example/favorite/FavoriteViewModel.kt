@@ -6,11 +6,13 @@ import com.example.domain.model.BookModel
 import com.example.domain.usecase.GetFavoritesUseCase
 import com.example.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +21,15 @@ class FavoriteViewModel @Inject constructor(
     getFavoritesUseCase: GetFavoritesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : ViewModel() {
+
+    // 즐겨찾기 토글 실패 여부
+    private val _favoriteError = MutableStateFlow(false)
+    val favoriteError = _favoriteError.asStateFlow()
+
+    // 즐겨찾기 토글 에러 상태 초기화
+    fun dismissFavoriteError() {
+        _favoriteError.value = false
+    }
 
     private val query = MutableStateFlow("")
     private val sort = MutableStateFlow(FavoriteSortType.ASCENDING)
@@ -73,7 +84,13 @@ class FavoriteViewModel @Inject constructor(
     // 즐겨찾기 토글
     fun toggleFavorite(book: BookModel) {
         viewModelScope.launch {
-            toggleFavoriteUseCase(book)
+            try {
+                toggleFavoriteUseCase(book)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _favoriteError.value = true
+            }
         }
     }
 }
