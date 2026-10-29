@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ui</string>
+
+    <string name="book_label">도서</string>
+    <string name="book_image">책 이미지</string>
+    <string name="book_author">저자</string>
+    <string name="book_publisher">출판사</string>
+    <string name="book_date">출간일</string>
+    <string name="book_favorite">즐겨찾기</string>
+
+    <string name="book_price_won">%1$s원</string>
+    <string name="filter">필터</string>
+    <string name="sort">정렬</string>
+    <string name="hint">제목 또는 저자를 입력해주세요.</string>
+
+</resources>

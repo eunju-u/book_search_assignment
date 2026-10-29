@@ -19,6 +19,7 @@ coroutines = "1.11.0"
 javaxInject = "1"
 retrofit = "3.0.0"
 okhttp = "4.12.0"
+coil = "2.4.0"
 
 # build-logic에서 읽는 SDK 버전
 compileSdk = "37"
@@ -52,6 +53,8 @@ javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "j
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # build-logic이 플러그인 코드를 컴파일할 때만 쓰는 Gradle 플러그인
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -72,4 +75,5 @@ booksearch-android-library = { id = "booksearch.android.library" }
 booksearch-android-compose = { id = "booksearch.android.compose" }
 booksearch-android-hilt = { id = "booksearch.android.hilt" }
 booksearch-jvm-library = { id = "booksearch.jvm.library" }
+booksearch-android-feature = { id = "booksearch.android.feature", version = "unspecified"}
 

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.booksearch.android.application)
     alias(libs.plugins.booksearch.android.compose)
+    alias(libs.plugins.booksearch.android.hilt)
 }
 
 android {
@@ -28,4 +29,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // 모듈
+    implementation(project(":core:designsystem"))
+    implementation(project(":feature:search"))
+    implementation(project(":feature:favorite"))
 }

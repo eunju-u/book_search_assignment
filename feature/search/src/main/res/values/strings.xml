@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">search</string>
+    <string name="search">검색</string>
+
+    <!-- 정렬 -->
+    <string name="sort_accuracy">정확도순</string>
+    <string name="sort_latest">발간일순</string>
 </resources>

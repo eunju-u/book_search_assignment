@@ -39,5 +39,9 @@ gradlePlugin {
             id = "booksearch.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("androidFeature") {
+            id = "booksearch.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
