@@ -28,6 +28,7 @@ fun TopWidget(
     text: String,
     onSearch: (String) -> Unit = {},
     selectedSort: String = "",
+    onBlankSearch: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Column(
@@ -48,6 +49,7 @@ fun TopWidget(
             text = text,
             hint = stringResource(R.string.hint),
             onSearch = onSearch,
+            onBlankSearch = onBlankSearch,
         )
         Spacer(modifier = Modifier.height(16.dp))
 

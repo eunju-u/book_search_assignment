@@ -1,5 +1,6 @@
 package com.example.favorite
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -59,6 +61,7 @@ internal fun FavoriteScreen(
     onBookClick: (BookModel) -> Unit,
 ) {
     val resources = LocalResources.current
+    val context = LocalContext.current
     var popup by rememberSaveable { mutableStateOf<FavoritePopup?>(null) }
 
     Column(
@@ -70,6 +73,9 @@ internal fun FavoriteScreen(
         TopWidget(
             title = stringResource(R.string.favorite),
             onSearch = onSearch,
+            onBlankSearch = {
+                Toast.makeText(context, R.string.search_query_required, Toast.LENGTH_SHORT).show()
+            },
             text = uiState.query,
             selectedSort = stringResource(uiState.sort.textRes),
             actions = {

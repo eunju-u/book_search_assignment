@@ -49,6 +49,7 @@ fun SearchWidget(
     text: String,
     hint: String,
     onSearch: (String) -> Unit = {},
+    onBlankSearch: (() -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -98,9 +99,13 @@ fun SearchWidget(
                 ),
                 keyboardActions = KeyboardActions(
                     onGo = {
-                        onSearch(textFieldState.text)
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
+                        if (textFieldState.text.isBlank() && onBlankSearch != null) {
+                            onBlankSearch()
+                        } else {
+                            onSearch(textFieldState.text)
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }
                     }
                 ),
                 textStyle = MaterialTheme.typography.labelSmall.copy(color = darkColor),
