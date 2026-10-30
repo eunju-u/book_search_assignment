@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,13 +26,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.designsystem.component.RowTextWidget
 import com.example.designsystem.R as DesignR
 
-// 도서 아이템
 @Composable
 fun BookItemWidget(
     modifier: Modifier = Modifier,
@@ -53,7 +52,7 @@ fun BookItemWidget(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .height(220.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White)
             .clickable { onClick() }
@@ -87,12 +86,17 @@ fun BookItemWidget(
                     text = stringResource(R.string.book_label),
                     style = MaterialTheme.typography.titleSmall.copy(color = Color.Gray),
                 )
-                Text(text = book.title.toHyphen(), fontWeight = FontWeight.Bold)
-                RowTextWidget(
-                    left = stringResource(R.string.book_author), right = book.authors.toHyphen(), color = Color.Gray
+                Text(
+                    text = book.title.toHyphen(),
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                RowTextWidget(left = stringResource(R.string.book_publisher), right = book.publisher.toHyphen(), color = Color.Gray)
-                RowTextWidget(left = stringResource(R.string.book_date), right = book.datetime.toHyphen(), color = Color.Gray)
+                RowTextWidget(
+                    left = stringResource(R.string.book_author), right = book.authors.toHyphen(), color = Color.Gray, maxLines = 1
+                )
+                RowTextWidget(left = stringResource(R.string.book_publisher), right = book.publisher.toHyphen(), color = Color.Gray, maxLines = 1)
+                RowTextWidget(left = stringResource(R.string.book_date), right = book.datetime.toHyphen(), color = Color.Gray, maxLines = 1)
                 Spacer(modifier = Modifier.height(30.dp))
             }
         }

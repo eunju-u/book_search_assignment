@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import com.example.designsystem.component.CappedAdaptiveGridCells
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -59,7 +61,7 @@ fun SearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val books = viewModel.books.collectAsLazyPagingItems()
-    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
     val resources = LocalResources.current
     val context = LocalContext.current
     val refresh = books.loadState.refresh
@@ -78,7 +80,7 @@ fun SearchScreen(
         viewModel.scrollToTop.collect {
             // 새 검색을 시작하면 당겨서 새로고침 상태는 끝냄
             isPullRefreshing = false
-            listState.scrollToItem(0)
+            gridState.scrollToItem(0)
         }
     }
 
@@ -120,11 +122,13 @@ fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     when {
-                        !isPullRefreshing && refresh is LoadState.NotLoading && books.itemCount > 0 -> LazyColumn(
+                        !isPullRefreshing && refresh is LoadState.NotLoading && books.itemCount > 0 -> LazyVerticalGrid(
+                            columns = CappedAdaptiveGridCells(minSize = 320.dp, maxColumns = 3),
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
-                            state = listState,
+                            state = gridState,
                         ) {
                             items(count = books.itemCount) { index ->
                                 val item = books[index] ?: return@items
@@ -136,7 +140,7 @@ fun SearchScreen(
                             }
 
                             // 리스트 하단 안내
-                            item {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 when {
                                     // 다음 페이지 조회 실패 시 목록 이어서 다시 조회
                                     append is LoadState.Error -> Column(

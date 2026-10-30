@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import com.example.designsystem.component.CappedAdaptiveGridCells
+import androidx.compose.foundation.lazy.grid.items
 import com.example.designsystem.component.ErrorHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -96,12 +97,14 @@ internal fun FavoriteScreen(
             }
         )
 
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = CappedAdaptiveGridCells(minSize = 320.dp, maxColumns = 3),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(items = uiState.books) { book ->
+            items(items = uiState.books, key = { it.id }) { book ->
                 BookItemWidget(
                     book = book,
                     onHeartClick = { onFavoriteClick(book) },
