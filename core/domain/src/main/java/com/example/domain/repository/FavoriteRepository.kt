@@ -8,6 +8,9 @@ interface FavoriteRepository {
     // 즐겨찾기 토글
     suspend fun toggleFavorite(book: BookModel)
 
+    // 즐겨찾기 지정한 상태 설정
+    suspend fun setFavorite(book: BookModel, isFavorite: Boolean)
+
     // 즐겨찾기 전체 목록
     fun getAllFavorites(): Flow<List<BookModel>>
 

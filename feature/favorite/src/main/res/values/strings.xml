@@ -13,4 +13,7 @@
     <string name="favorite_filter_20000">2만원대</string>
     <string name="favorite_filter_30000">3만원대</string>
     <string name="favorite_filter_over_40000">4만원 이상</string>
+    <string name="favorite_empty">관심 있는 책의 하트를 눌러 저장해보세요.</string>
+    <string name="favorite_removed">즐겨찾기에서 삭제했습니다.</string>
+    <string name="favorite_undo">실행 취소</string>
 </resources>

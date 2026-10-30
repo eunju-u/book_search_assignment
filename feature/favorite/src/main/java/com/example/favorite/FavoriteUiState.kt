@@ -7,5 +7,7 @@ data class FavoriteUiState(
     val query: String = "",
     val sort: FavoriteSortType = FavoriteSortType.ASCENDING,
     val filter: FavoriteFilterType = FavoriteFilterType.RESET,
+    val totalCount: Int = 0,
+    val isLoaded: Boolean = false,
     val books: List<BookModel> = emptyList(),
 )

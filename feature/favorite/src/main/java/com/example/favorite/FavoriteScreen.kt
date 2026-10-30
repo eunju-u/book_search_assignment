@@ -4,6 +4,8 @@ import com.example.ui.R as UiR
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import com.example.designsystem.component.CappedAdaptiveGridCells
 import androidx.compose.foundation.lazy.grid.items
 import com.example.designsystem.component.ErrorHost
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,20 +51,42 @@ fun FavoriteScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // 즐겨찾기 삭제 대기 상태 관찰
+    val removal by viewModel.pendingRemoval.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val removedMessage = stringResource(R.string.favorite_removed)
+    val undoLabel = stringResource(R.string.favorite_undo)
+    LaunchedEffect(removal?.id) {
+        val current = removal ?: return@LaunchedEffect
+
+        // 삭제 완료 안내와 실행 취소 액션이 포함한 스낵바를 표시
+        val result = snackbar.showSnackbar(
+            removedMessage, actionLabel = undoLabel,
+            withDismissAction = true, duration = SnackbarDuration.Long,
+        )
+
+        // 실행 취소를 선택하면 즐겨찾기 복구하고 그 외는 삭제 대기 상태 해제
+        if (result == SnackbarResult.ActionPerformed) viewModel.undoRemoval(current)
+        else viewModel.dismissRemoval(current.id)
+    }
+
     val favoriteError by viewModel.favoriteError.collectAsStateWithLifecycle()
     ErrorHost(
         hasError = favoriteError,
         message = stringResource(UiR.string.favorite_update_failed),
         onErrorShown = viewModel::dismissFavoriteError,
     ) {
-        FavoriteScreen(
-            uiState = uiState,
-            onSearch = viewModel::search,
-            onSortSelected = viewModel::selectSort,
-            onFilterSelected = viewModel::selectFilter,
-            onFavoriteClick = viewModel::toggleFavorite,
-            onBookClick = onBookClick,
-        )
+        Box(Modifier.fillMaxSize()) {
+            FavoriteScreen(
+                uiState = uiState,
+                onSearch = viewModel::search,
+                onSortSelected = viewModel::selectSort,
+                onFilterSelected = viewModel::selectFilter,
+                onFavoriteClick = viewModel::removeFavorite,
+                onBookClick = onBookClick,
+            )
+            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+        }
     }
 }
 
@@ -82,9 +113,6 @@ internal fun FavoriteScreen(
         TopWidget(
             title = stringResource(R.string.favorite),
             onSearch = onSearch,
-            onBlankSearch = {
-                Toast.makeText(context, R.string.search_query_required, Toast.LENGTH_SHORT).show()
-            },
             text = uiState.query,
             selectedSort = stringResource(uiState.sort.textRes),
             actions = {
@@ -96,19 +124,32 @@ internal fun FavoriteScreen(
             }
         )
 
-        LazyVerticalGrid(
-            columns = CappedAdaptiveGridCells(minSize = 320.dp, maxColumns = 3),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(items = uiState.books, key = { it.id }) { book ->
-                BookItemWidget(
-                    book = book,
-                    onHeartClick = { onFavoriteClick(book) },
-                    onClick = { onBookClick(book) },
-                )
+        if (uiState.isLoaded && uiState.books.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(stringResource(
+                    if (uiState.totalCount == 0) R.string.favorite_empty
+                    else UiR.string.none_result
+                ))
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = CappedAdaptiveGridCells(minSize = 320.dp, maxColumns = 3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(items = uiState.books, key = { it.id }) { book ->
+                    BookItemWidget(
+                        book = book,
+                        onHeartClick = { onFavoriteClick(book) },
+                        onClick = { onBookClick(book) },
+                    )
+                }
             }
         }
     }

@@ -159,11 +159,13 @@ internal fun DetailScreen(
                     right = book.isbn.toHyphen(),
                     color = Color.Black
                 )
-                RowTextWidget(
-                    left = stringResource(id = UiR.string.book_price),
-                    right = stringResource(UiR.string.book_price_won, book.price.formatPrice()),
-                    color = Color.Black
-                )
+                if (book.salePrice < 0 || book.salePrice <= book.price) {
+                    RowTextWidget(
+                        left = stringResource(id = UiR.string.book_price),
+                        right = stringResource(UiR.string.book_price_won, book.price.formatPrice()),
+                        color = Color.Black
+                    )
+                }
                 // salePrice가 0 이상일 때만 표시
                 if (book.salePrice >= 0) {
                     val discountPercent = if (book.price > 0 && book.salePrice <= book.price) {

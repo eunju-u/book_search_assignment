@@ -226,7 +226,7 @@ fun SearchScreen(
 
                         // 검색 결과 없을 경우
                         refresh is LoadState.NotLoading && books.itemCount == 0 && uiState.query.isNotBlank() ->
-                            SearchStatusWidget(stringResource(UiR.string.none_result))
+                            SearchStatusWidget(stringResource(UiR.string.none_result), centered = true)
                     }
                 }
             }
@@ -270,17 +270,17 @@ fun SearchScreen(
 
 // 검색 결과 없거나, 실패 시 문구 노출 뷰
 @Composable
-private fun SearchStatusWidget(text: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+private fun SearchStatusWidget(text: String, centered: Boolean = false) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = if (centered) Alignment.Center else Alignment.TopCenter,
     ) {
         Text(
             text = text,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(15.dp)
+                .verticalScroll(rememberScrollState()),
             textAlign = TextAlign.Center,
             color = Color.Gray
         )

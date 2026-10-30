@@ -26,6 +26,14 @@ class FavoriteRepositoryImpl @Inject constructor(
         }.await()
     }
 
+    // 상태값에 따라 즐겨찾기 추가, 삭제
+    override suspend fun setFavorite(book: BookModel, isFavorite: Boolean) {
+        applicationScope.async {
+            if (isFavorite) localDataSource.addFavorite(book.toEntity())
+            else localDataSource.removeFavorite(book.id)
+        }.await()
+    }
+
     // 즐겨찾기 전체 목록
     override fun getAllFavorites(): Flow<List<BookModel>> {
         return localDataSource.getAllFavorites().map { list -> list.map { it.toModel() } }
