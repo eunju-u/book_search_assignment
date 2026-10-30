@@ -199,7 +199,10 @@ fun SearchScreen(
                                     }
 
                                     append.endOfPaginationReached -> Text(
-                                        text = stringResource(UiR.string.last_page),
+                                        text = stringResource(
+                                            R.string.search_results_end,
+                                            SearchPagingSource.MAX_PAGE,
+                                        ),
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(15.dp),

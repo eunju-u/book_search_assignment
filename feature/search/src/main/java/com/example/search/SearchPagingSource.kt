@@ -20,7 +20,7 @@ internal class SearchPagingSource(
             LoadResult.Page(
                 data = pageBooks.books,
                 prevKey = null,
-                nextKey = if (pageBooks.isEnd) null else page + 1,
+                nextKey = if (pageBooks.isEnd || page >= MAX_PAGE) null else page + 1,
             )
         } catch (e: CancellationException) {
             throw e
@@ -33,5 +33,6 @@ internal class SearchPagingSource(
 
     companion object {
         const val FIRST_PAGE = 1
+        const val MAX_PAGE = 50 // 카카오 도서 검색 API page 최대 50
     }
 }

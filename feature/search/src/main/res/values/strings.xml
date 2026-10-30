@@ -6,4 +6,5 @@
     <string name="sort_accuracy">정확도순</string>
     <string name="sort_latest">발간일순</string>
     <string name="waiting_for_network">인터넷 연결을 기다리고 있어요. 연결되면 자동으로 다시 불러옵니다.</string>
+    <string name="search_results_end">검색 가능한 결과의 마지막 페이지입니다.\n검색 결과는 최대 %1$d페이지까지 제공됩니다. 다른 검색어로 검색해보세요.</string>
 </resources>
