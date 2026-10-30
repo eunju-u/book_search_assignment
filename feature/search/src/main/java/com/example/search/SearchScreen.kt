@@ -50,6 +50,7 @@ import com.example.domain.error.DataError
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.ui.SelectionPopupWidget
 import com.example.designsystem.component.PopupWidget
 import com.example.designsystem.theme.BackgroundGray
 import com.example.domain.model.BookModel
@@ -73,6 +74,8 @@ fun SearchScreen(
     val context = LocalContext.current
     val refresh = books.loadState.refresh
     val append = books.loadState.append
+    val isNetworkRefreshError = (refresh as? LoadState.Error)?.error as? DataError.Network
+    var isNetworkErrorDismissed by rememberSaveable(refresh) { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
     var isOnline by remember { mutableStateOf<Boolean?>(null) }
 
@@ -97,7 +100,7 @@ fun SearchScreen(
     var showSort by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(refresh) {
-        if (refresh is LoadState.NotLoading) isPullRefreshing = false
+        if (refresh !is LoadState.Loading) isPullRefreshing = false
     }
 
     LaunchedEffect(Unit) {
@@ -146,7 +149,9 @@ fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     when {
-                        !isPullRefreshing && refresh is LoadState.NotLoading && books.itemCount > 0 -> LazyVerticalGrid(
+                        !isPullRefreshing &&
+                            (refresh is LoadState.NotLoading || isNetworkRefreshError != null) &&
+                            books.itemCount > 0 -> LazyVerticalGrid(
                             columns = CappedAdaptiveGridCells(minSize = 320.dp, maxColumns = 3),
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -216,7 +221,8 @@ fun SearchScreen(
                         }
 
                         // 실패할 경우
-                        refresh is LoadState.Error -> SearchStatusWidget(stringResource(refresh.error.errorMessageRes()))
+                        refresh is LoadState.Error && isNetworkRefreshError == null ->
+                            SearchStatusWidget(stringResource(refresh.error.errorMessageRes()))
 
                         // 검색 결과 없을 경우
                         refresh is LoadState.NotLoading && books.itemCount == 0 && uiState.query.isNotBlank() ->
@@ -225,8 +231,16 @@ fun SearchScreen(
                 }
             }
 
-            if (showSort) {
+            if (isNetworkRefreshError != null && !isNetworkErrorDismissed) {
                 PopupWidget(
+                    message = stringResource(UiR.string.connect_network),
+                    confirmText = stringResource(R.string.confirm),
+                    onDismiss = { isNetworkErrorDismissed = true },
+                )
+            }
+
+            if (showSort) {
+                SelectionPopupWidget(
                     items = SearchSortType.entries,
                     selectedItem = uiState.sort,
                     onItemSelected = {

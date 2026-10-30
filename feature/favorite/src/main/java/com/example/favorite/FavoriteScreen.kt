@@ -18,14 +18,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.component.PopupWidget
+import com.example.ui.SelectionPopupWidget
 import com.example.designsystem.theme.BackgroundGray
 import com.example.domain.model.BookModel
 import com.example.ui.BookItemWidget
@@ -115,7 +114,7 @@ internal fun FavoriteScreen(
     }
 
     when (popup) {
-        FavoritePopup.SORT -> PopupWidget(
+        FavoritePopup.SORT -> SelectionPopupWidget(
             items = FavoriteSortType.entries,
             selectedItem = uiState.sort,
             getText = { resources.getString(it.textRes) },
@@ -126,7 +125,7 @@ internal fun FavoriteScreen(
             onDismiss = { popup = null }
         )
 
-        FavoritePopup.FILTER -> PopupWidget(
+        FavoritePopup.FILTER -> SelectionPopupWidget(
             items = FavoriteFilterType.entries,
             selectedItem = uiState.filter,
             getText = { resources.getString(it.textRes) },
