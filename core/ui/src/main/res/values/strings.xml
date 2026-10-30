@@ -11,6 +11,8 @@
     <string name="book_info">책소개</string>
 
     <string name="book_price_won">%1$s원</string>
+    <string name="book_discount_percent">%1$d%%</string>
+    <string name="book_sale_price_with_discount">%1$s원 (%2$d%% 할인)</string>
     <string name="filter">필터</string>
     <string name="sort">정렬</string>
     <string name="hint">제목 또는 저자를 입력해주세요.</string>

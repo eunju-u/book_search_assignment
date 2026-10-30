@@ -26,8 +26,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.designsystem.component.RowTextWidget
@@ -52,7 +54,7 @@ fun BookItemWidget(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp)
+            .height(240.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White)
             .clickable { onClick() }
@@ -76,12 +78,11 @@ fun BookItemWidget(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // 이미지 도서 정보
+            // 이미지 옆 제목/지은이
             Column(
                 verticalArrangement = Arrangement.spacedBy(3.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = stringResource(R.string.book_label),
                     style = MaterialTheme.typography.titleSmall.copy(color = Color.Gray),
@@ -97,7 +98,7 @@ fun BookItemWidget(
                 )
                 RowTextWidget(left = stringResource(R.string.book_publisher), right = book.publisher.toHyphen(), color = Color.Gray, maxLines = 1)
                 RowTextWidget(left = stringResource(R.string.book_date), right = book.datetime.toHyphen(), color = Color.Gray, maxLines = 1)
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(50.dp))
             }
         }
 
@@ -107,11 +108,40 @@ fun BookItemWidget(
             modifier = Modifier.align(Alignment.TopEnd)
         )
 
-        // 오른쪽 하단 가격
-        Text(
-            text = stringResource(R.string.book_price_won, book.price.formatPrice()),
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+        // salePrice가(할인가)가 0 이상일 경우 정가(price), 할인율(직접계산), 할인가(salePrice가)를 표시
+        Column(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            horizontalAlignment = Alignment.End,
+        ) {
+            if (book.salePrice >= 0) {
+                Text(
+                    text = stringResource(R.string.book_price_won, book.price.formatPrice()),
+                    color = Color.Gray,
+                    textDecoration = TextDecoration.LineThrough,
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val discountPercent = if (book.price > 0 && book.salePrice <= book.price) {
+                        (book.price - book.salePrice) * 100 / book.price
+                    } else null
+                    if (discountPercent != null) {
+                        Text(
+                            text = stringResource(R.string.book_discount_percent, discountPercent),
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                    }
+                    Text(
+                        text = stringResource(R.string.book_price_won, book.salePrice.formatPrice()),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.book_price_won, book.price.formatPrice()),
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
     }
 }

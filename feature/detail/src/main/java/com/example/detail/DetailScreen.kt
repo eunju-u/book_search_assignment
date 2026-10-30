@@ -164,11 +164,22 @@ internal fun DetailScreen(
                     right = stringResource(UiR.string.book_price_won, book.price.formatPrice()),
                     color = Color.Black
                 )
-                // salePrice가 -1이면 셀 숨김
-                if (book.salePrice != -1) {
+                // salePrice가 0 이상일 때만 표시
+                if (book.salePrice >= 0) {
+                    val discountPercent = if (book.price > 0 && book.salePrice <= book.price) {
+                        (book.price - book.salePrice) * 100 / book.price
+                    } else null
                     RowTextWidget(
                         left = stringResource(id = UiR.string.book_sale_price),
-                        right = stringResource(UiR.string.book_price_won, book.salePrice.formatPrice()),
+                        right = if (discountPercent != null) {
+                            stringResource(
+                                UiR.string.book_sale_price_with_discount,
+                                book.salePrice.formatPrice(),
+                                discountPercent,
+                            )
+                        } else {
+                            stringResource(UiR.string.book_price_won, book.salePrice.formatPrice())
+                        },
                         color = Color.Black
                     )
                 }
