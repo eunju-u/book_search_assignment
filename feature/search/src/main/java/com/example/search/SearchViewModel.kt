@@ -2,6 +2,9 @@ package com.example.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
+import com.example.domain.network.NetworkMonitor
+import com.example.domain.error.DataError
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -32,10 +35,34 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    networkMonitor: NetworkMonitor,
     private val loadBooksUseCase: LoadBooksUseCase,
     getFavoriteIdsUseCase: GetFavoriteIdsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : ViewModel() {
+
+    val networkUpdates = networkMonitor.isOnline
+    // 연결 복구 후 재시도하기 전에 해제하여 같은 실패가 반복 전달되어도 한 번만 요청함
+    private var waitingForRecovery = false
+
+    fun shouldRetryAppend(isOnline: Boolean, refresh: LoadState, append: LoadState): Boolean {
+        val networkError = append is LoadState.Error && append.error is DataError.Network
+        if (refresh !is LoadState.NotLoading || append is LoadState.NotLoading ||
+            (append is LoadState.Error && !networkError)
+        ) {
+            waitingForRecovery = false
+            return false
+        }
+        if (!isOnline) {
+            waitingForRecovery = true
+            return false
+        }
+        if (networkError && waitingForRecovery) {
+            waitingForRecovery = false
+            return true
+        }
+        return false
+    }
 
     // 즐겨찾기 토글 실패 여부
     private val _favoriteError = MutableStateFlow(false)
@@ -115,6 +142,7 @@ class SearchViewModel @Inject constructor(
         val state = _uiState.value
         if (state.query.isBlank()) return
 
+        waitingForRecovery = false
         searchRequest.update { previous ->
             SearchRequest(state.query, state.sort, requestId = (previous?.requestId ?: 0) + 1)
         }

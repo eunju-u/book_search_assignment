@@ -28,6 +28,8 @@ import com.example.designsystem.component.ErrorHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -40,6 +42,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.combine
+import com.example.domain.error.DataError
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -66,6 +73,23 @@ fun SearchScreen(
     val context = LocalContext.current
     val refresh = books.loadState.refresh
     val append = books.loadState.append
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isOnline by remember { mutableStateOf<Boolean?>(null) }
+
+    LaunchedEffect(viewModel, books, lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            // 관찰을 시작할 때 현재 연결 상태를 다시 확인함
+            isOnline = null
+            combine(viewModel.networkUpdates, snapshotFlow { books.loadState }) { online, states ->
+                online to states
+            }.collect { (online, states) ->
+                isOnline = online
+                if (viewModel.shouldRetryAppend(online, states.refresh, states.append)) {
+                    books.retry()
+                }
+            }
+        }
+    }
 
     // 새로고침 중인지 여부
     var isPullRefreshing by rememberSaveable { mutableStateOf(false) }
@@ -142,6 +166,13 @@ fun SearchScreen(
                             // 리스트 하단 안내
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 when {
+                                    append is LoadState.Loading -> Box(
+                                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        CircularProgressIndicator(Modifier.size(32.dp))
+                                    }
+
                                     // 다음 페이지 조회 실패 시 목록 이어서 다시 조회
                                     append is LoadState.Error -> Column(
                                         modifier = Modifier
@@ -150,12 +181,20 @@ fun SearchScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            text = stringResource(append.error.errorMessageRes()),
+                                            text = stringResource(
+                                                if (isOnline == false && append.error is DataError.Network) {
+                                                    R.string.waiting_for_network
+                                                } else {
+                                                    append.error.errorMessageRes()
+                                                }
+                                            ),
                                             textAlign = TextAlign.Center
                                         )
-                                        Spacer(Modifier.height(5.dp))
-                                        Button(onClick = { books.retry() }) {
-                                            Text(text = stringResource(UiR.string.reset_load))
+                                        if (!(isOnline == false && append.error is DataError.Network)) {
+                                            Spacer(Modifier.height(5.dp))
+                                            Button(onClick = { books.retry() }) {
+                                                Text(text = stringResource(UiR.string.reset_load))
+                                            }
                                         }
                                     }
 
@@ -198,7 +237,7 @@ fun SearchScreen(
 
             // 최초 화면은 검색 전 상태에서는 refresh = Loading이라 계속 로딩 중으로 표시 됨. 검색했을 때만 로딩 표시
             val isSearched = uiState.query.isNotBlank()
-            if ((isSearched && refresh is LoadState.Loading && !isPullRefreshing) || append is LoadState.Loading) {
+            if (isSearched && refresh is LoadState.Loading && !isPullRefreshing) {
                 // refresh indicator
                 CircularProgressIndicator(
                     modifier = Modifier
